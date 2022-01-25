@@ -24,7 +24,7 @@ dependencies {
     paperDevBundle("1.18-R0.1-SNAPSHOT")
 
     implementation("net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT")
-    compileOnly("me.clip:placeholderapi:2.10.10")
+    compileOnly("me.clip:placeholderapi:2.11.1")
 }
 
 tasks {

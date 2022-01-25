@@ -3,6 +3,7 @@ package ga.caomile.atelier.common;
 import ga.caomile.atelier.Atelier;
 import ga.caomile.atelier.AtelierConstants;
 import ga.caomile.atelier.api.AtelierPlayer;
+import ga.caomile.atelier.utils.HexUtils;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -30,9 +31,10 @@ public final class AtelierScoreboard {
         AtelierPlayer atelierPlayer = this.plugin.getManager().getAtelierPlayer(player);
         Scoreboard playerScoreboard = player.getScoreboard();
 
-        playerScoreboard.getTeam("memory").suffix(Component.text(((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1000 / 1000) + "/" + Runtime.getRuntime().totalMemory() / 1000 / 1000 + "MB", NamedTextColor.GREEN));
-        playerScoreboard.getTeam("cpu").suffix(Component.text(PlaceholderAPI.setPlaceholders(player, "%spark_cpu_process%"), NamedTextColor.GREEN));
-        playerScoreboard.getTeam("tps").suffix(Component.text((double) Math.round(Bukkit.getTPS()[0] * 10) / 10, NamedTextColor.GREEN));
+        playerScoreboard.getTeam("tps").suffix(Component.text(HexUtils.colorify("&7❏&f  TPS&7 ▶&e ") + (double) Math.round(Bukkit.getTPS()[0] * 10) / 10, NamedTextColor.GREEN));
+        playerScoreboard.getTeam("online").suffix(Component.text(HexUtils.colorify("&e {online}/{max}"
+                .replace("{online}", String.valueOf(Bukkit.getOnlinePlayers().size()))
+                .replace("{max}", String.valueOf(Bukkit.getMaxPlayers())))));
 
         // TAB
         player.playerListName(Component.text("[", NamedTextColor.DARK_GRAY)
@@ -42,16 +44,16 @@ public final class AtelierScoreboard {
                 .append(Component.text(player.getName() + " ", NamedTextColor.WHITE))
         );
 
-        ((CraftPlayer) player).setPlayerListHeader(
-                "§8§l>    §x§0§3§4§f§f§9§lA§x§0§3§6§5§f§8§lt§x§0§2§7§b§f§6§le§x§0§2§9§0§f§5§ll§x§0§1§a§6§f§3§li§x§0§1§b§c§f§2§le§x§0§0§d§1§f§0§lr§x§0§0§e§7§e§f§lM§x§0§0§f§d§e§e§lC §8(" + this.plugin.getServer().getMinecraftVersion() +  ")§8§l     <" +
+        ((CraftPlayer) player).setPlayerListHeader(HexUtils.colorify(
+                "§8§l>    <g#100:#F2770B:#E85C90:#E0C810>AtelierMC §8(" + this.plugin.getServer().getMinecraftVersion() +  ")§8§l     <" +
                 "\n" +
                 "§fOnline: §e" + Bukkit.getOnlinePlayers().size() + "§f/§e" + Bukkit.getMaxPlayers() +
                 "\n"
-        );
-        ((CraftPlayer) player).setPlayerListFooter(
+        ));
+        ((CraftPlayer) player).setPlayerListFooter(HexUtils.colorify(
                 "\n" +
-                "§fJoin our §x§7§2§8§9§d§aDiscord Server §ffor support!"
-        );
+                "§fJoin our <#7289da>Discord Server §ffor support!"
+        ));
     }
 
     public void init(Player player) {
@@ -59,30 +61,30 @@ public final class AtelierScoreboard {
 
         // Scoreboard initialization
         Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
-        Objective objective = board.registerNewObjective("sidebar", "dummy", MiniMessage.get().parse("<gradient:#043AFB:#00FDEE><bold>AtelierMC</bold></gradient>"));
+        Objective objective = board.registerNewObjective("sidebar", "dummy", HexUtils.colorify("<g:#043AFB:#00FDEE>&lAtelierMC"));
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         
         // Init teams
-        Team cpu = board.registerNewTeam("cpu");
-        cpu.addEntry("CPU: ");
-        cpu.suffix(Component.text(PlaceholderAPI.setPlaceholders(player, "%spark_cpu_process%"), NamedTextColor.GREEN));
-        Team memory = board.registerNewTeam("memory");
-        memory.addEntry("Memory: ");
-        memory.suffix(Component.text(((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1000 / 1000) + "/" + Runtime.getRuntime().totalMemory() / 1000 / 1000 + "MB", NamedTextColor.GREEN));
         Team tps = board.registerNewTeam("tps");
-        tps.addEntry("TPS: ");
-        tps.suffix(Component.text((double) Math.round(Bukkit.getTPS()[0] * 10) / 10, NamedTextColor.GREEN));
+        tps.addEntry("  <#18c1ff>●&f TPS&7:");
+        tps.suffix(Component.text("&7❏&f  TPS&7 ▶&e " + (double) Math.round(Bukkit.getTPS()[0] * 10) / 10));
+        Team online = board.registerNewTeam("online");
+        online.addEntry("  <#18c1ff>●&f Online&7:");
+        online.suffix(Component.text(HexUtils.colorify("&e {online}&8/&e{max}"
+                .replace("{online}", String.valueOf(Bukkit.getOnlinePlayers().size()))
+                .replace("{max}", String.valueOf(Bukkit.getMaxPlayers())))));
 
-        objective.getScore(ChatColor.GRAY + AtelierConstants.ATELIER_IP).setScore(0);
+        objective.getScore(HexUtils.colorify("&7" + dateFormat.format(new Date(System.currentTimeMillis())))).setScore(10);
+        objective.getScore(" ").setScore(9);
+        objective.getScore(HexUtils.colorify("&8► &b&lPLAYER")).setScore(8);
+        objective.getScore(HexUtils.colorify("  <#18c1ff>●&f User&7: " + player.getName())).setScore(7);
+        objective.getScore(HexUtils.colorify("  <#18c1ff>●&f Rank&7: " + LegacyComponentSerializer.builder().build().serialize(atelierPlayer.getRole().getDisplay()))).setScore(6);
+        objective.getScore("").setScore(5);
+        objective.getScore(HexUtils.colorify("&8► &b&lSERVER")).setScore(4);
+        objective.getScore(HexUtils.colorify("  <#18c1ff>●&f TPS&7:")).setScore(3);
+        objective.getScore(HexUtils.colorify("  <#18c1ff>●&f Online&7:")).setScore(2);
         objective.getScore("").setScore(1);
-        objective.getScore("Memory: ").setScore(3);
-        objective.getScore("CPU: ").setScore(4);
-        objective.getScore("TPS: ").setScore(5);
-        objective.getScore(" ").setScore(6);
-        objective.getScore("Rank:" + LegacyComponentSerializer.builder().build().serialize(atelierPlayer.getRole().getDisplay())).setScore(7);
-        objective.getScore("Player: " + ChatColor.GREEN +  player.getName()).setScore(8);
-        objective.getScore("  ").setScore(9);
-        objective.getScore(ChatColor.GRAY + dateFormat.format(new Date(System.currentTimeMillis()))).setScore(10);
+        objective.getScore(HexUtils.colorify("&6&o " + AtelierConstants.ATELIER_IP)).setScore(0);
 
         player.setScoreboard(board);
     }
