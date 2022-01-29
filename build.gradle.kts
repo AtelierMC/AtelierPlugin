@@ -13,6 +13,7 @@ repositories {
     maven("https://maven.fabricmc.net/") {
         name = "Fabric"
     }
+    maven("https://oss.sonatype.org/content/repositories/snapshots")
 }
 
 val mcVersion: String by project
@@ -24,7 +25,7 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:0.12.12")
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.46.1+1.18")
 
-    compileOnly("net.luckperms:api:5.3")
+    modImplementation("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
 }
 
 loom {

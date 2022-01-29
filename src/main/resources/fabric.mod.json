@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "atelier",
+  "version": "${version}",
+  "name": "Atelier",
+  "environment": "server",
+  "entrypoints": {
+    "server": [
+      "tech.ateliermc.atelier.Atelier"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.12.12",
+    "minecraft": "1.18.x",
+    "java": ">=17"
+  }
+}
