@@ -1,58 +1,62 @@
-import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
-
 plugins {
     `java-library`
-    id("io.papermc.paperweight.userdev") version "1.3.1"
-    id("xyz.jpenilla.run-paper") version "1.0.6"
-    id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
-    id("com.github.johnrengelman.shadow") version "7.1.0"
-}
 
-group = "ga.caomile"
-version = "1.0.0-SNAPSHOT"
-description = "AtelierMC core plugin"
+    idea
+    eclipse
+    checkstyle
 
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    id("fabric-loom")
 }
 
 repositories {
-    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    mavenCentral()
+    maven("https://maven.fabricmc.net/") {
+        name = "Fabric"
+    }
 }
 
-dependencies {
-    paperDevBundle("1.18-R0.1-SNAPSHOT")
+val mcVersion: String by project
 
-    implementation("net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT")
-    compileOnly("me.clip:placeholderapi:2.11.1")
+dependencies {
+    // To change the versions see the gradle.properties file
+    minecraft("com.mojang:minecraft:$mcVersion")
+    mappings(loom.officialMojangMappings())
+    modImplementation("net.fabricmc:fabric-loader:0.12.12")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:0.46.1+1.18")
+
+    compileOnly("net.luckperms:api:5.3")
+}
+
+loom {
+    //ccessWidenerPath.set(file("src/main/resources/sekiei.accesswidener"))
+}
+
+checkstyle {
+    toolVersion = "9.2"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+
+    withSourcesJar()
 }
 
 tasks {
-    val copyToTestServer = register<org.gradle.api.tasks.Copy>("copyToTestServer") {
-        from("build/libs/atelier-1.0.0-SNAPSHOT-dev-all.jar")
-        into("C:/Users/JustMango/Desktop/Test/plugins")
-    }
-
-
-    build {
-        dependsOn(reobfJar)
-        dependsOn(shadowJar)
-        finalizedBy(copyToTestServer)
-    }
-
-    compileJava {
-        options.encoding = Charsets.UTF_8.name()
-        options.release.set(17)
-    }
     processResources {
-        filteringCharset = Charsets.UTF_8.name()
-    }
-}
+        inputs.property("version", project.version)
 
-// Configure plugin.yml generation
-bukkit {
-    load = BukkitPluginDescription.PluginLoadOrder.STARTUP
-    main = "ga.caomile.atelier.Atelier"
-    apiVersion = "1.18"
-    authors = listOf("JustMangoT")
+        filesMatching("fabric.mod.json") {
+            expand(mutableMapOf("version" to project.version))
+        }
+    }
+
+    withType<AbstractArchiveTask> {
+        isPreserveFileTimestamps = false
+        isPreserveFileTimestamps = true
+    }
+
+    withType<GenerateModuleMetadata> {
+        enabled = false
+    }
 }

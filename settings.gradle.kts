@@ -1,7 +1,14 @@
 pluginManagement {
     repositories {
+        maven("https://maven.fabricmc.net/") {
+            name = "Fabric"
+        }
+        mavenCentral()
         gradlePluginPortal()
-        maven("https://papermc.io/repo/repository/maven-public/")
+    }
+
+    plugins {
+        id("fabric-loom") version "0.10-SNAPSHOT"
     }
 }
 
