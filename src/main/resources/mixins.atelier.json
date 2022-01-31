@@ -1,0 +1,20 @@
+{
+  "required": true,
+  "minVersion": "0.8.3",
+  "package": "tech.ateliermc.atelier.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "server.ServerScoreboardMixin",
+    "server.level.ServerPlayerMixin",
+    "server.network.ServerGamePacketListenerImplMixin",
+    "server.players.PlayerListMixin",
+    "world.entity.player.PlayerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1,
+    "maxShiftBy": 3
+  },
+  "overwrites": {
+    "conformVisibility": true
+  }
+}

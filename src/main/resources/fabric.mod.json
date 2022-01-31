@@ -9,6 +9,9 @@
       "tech.ateliermc.atelier.Atelier"
     ]
   },
+  "mixins": [
+    "mixins.atelier.json"
+  ],
   "depends": {
     "fabricloader": ">=0.12.12",
     "minecraft": "1.18.x",

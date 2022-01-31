@@ -25,11 +25,13 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:0.12.12")
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.46.1+1.18")
 
+    compileOnly("net.luckperms:api:5.3")
+    compileOnly("me.lucko:spark-api:0.1-SNAPSHOT")
     modImplementation("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
 }
 
 loom {
-    //ccessWidenerPath.set(file("src/main/resources/sekiei.accesswidener"))
+    accessWidenerPath.set(file("src/main/resources/atelier.accesswidener"))
 }
 
 checkstyle {

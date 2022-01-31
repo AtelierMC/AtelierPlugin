@@ -1,0 +1,3 @@
+accessWidener	v1	named
+
+accessible method net/minecraft/server/players/PlayerList updateEntireScoreboard (Lnet/minecraft/server/ServerScoreboard;Lnet/minecraft/server/level/ServerPlayer;)V
