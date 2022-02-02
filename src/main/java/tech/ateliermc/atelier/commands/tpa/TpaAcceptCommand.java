@@ -8,6 +8,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
+import tech.ateliermc.atelier.Atelier;
 import tech.ateliermc.atelier.AtelierPermissions;
 
 public class TpaAcceptCommand {
@@ -15,6 +16,14 @@ public class TpaAcceptCommand {
         dispatcher.register(Commands.literal("tpaccept").requires(Permissions.require(AtelierPermissions.TPA))
                 .executes(ctx -> {
                     ServerPlayer player = ctx.getSource().getPlayerOrException();
+
+                    if (Atelier.commandCooldown.containsKey(player.getGameProfile().getId())) {
+                        long secondsLeft = (Atelier.commandCooldown.get(player.getGameProfile().getId()) - System.currentTimeMillis()) / 1000;
+                        if (secondsLeft > 0) {
+                            ctx.getSource().sendSuccess(new TextComponent(ChatFormatting.RED + "You must wait " + secondsLeft + " seconds before using this command again."), false);
+                            return 1;
+                        } else Atelier.commandCooldown.put(player.getGameProfile().getId(), System.currentTimeMillis() + (Atelier.cooldown * 1000));
+                    }
 
                     if (TpaCommand.tpaMap.containsKey(player)) {
                         ServerPlayer requester = TpaCommand.tpaMap.get(player);

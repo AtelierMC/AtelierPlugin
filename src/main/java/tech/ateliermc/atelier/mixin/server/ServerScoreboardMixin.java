@@ -16,7 +16,4 @@ import java.util.List;
 
 @Mixin(ServerScoreboard.class)
 public class ServerScoreboardMixin extends Scoreboard {
-    private final List<ServerPlayer> players = new ArrayList<>();
-
-
 }

@@ -11,13 +11,5 @@ import tech.ateliermc.atelier.common.AtelierScoreboard;
 
 @Mixin(PlayerList.class)
 public class PlayerListMixin {
-    @Inject(method = "placeNewPlayer(Lnet/minecraft/network/Connection;Lnet/minecraft/server/level/ServerPlayer;)V",
-            at = @At(
-                    value = "RETURN"
-            )
-    )
-    private void setupScoreboard(Connection connection, ServerPlayer serverPlayer, CallbackInfo ci) {
-        AtelierScoreboard.initSidebar(serverPlayer);
-        AtelierScoreboard.initTablist(serverPlayer);
-    }
+
 }

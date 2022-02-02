@@ -9,6 +9,7 @@
       "tech.ateliermc.atelier.Atelier"
     ]
   },
+  "accessWidener": "atelier.accesswidener",
   "mixins": [
     "mixins.atelier.json"
   ],

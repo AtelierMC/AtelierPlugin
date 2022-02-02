@@ -1,23 +1,24 @@
-package tech.ateliermc.atelier.commands.tpa;
+package tech.ateliermc.atelier.commands.spawn;
 
-import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.commands.SetWorldSpawnCommand;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.storage.LevelData;
 import tech.ateliermc.atelier.Atelier;
+import tech.ateliermc.atelier.AtelierPermissions;
 
-public class TpaDenyCommand {
+public class SpawnCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("tpdeny").requires(Permissions.require("ateliermc.tpa"))
+        dispatcher.register(Commands.literal("spawn").requires(Permissions.require(AtelierPermissions.SPAWN))
                 .executes(ctx -> {
                     ServerPlayer player = ctx.getSource().getPlayerOrException();
+                    LevelData data = player.getLevel().getLevelData();
 
                     if (Atelier.commandCooldown.containsKey(player.getGameProfile().getId())) {
                         long secondsLeft = (Atelier.commandCooldown.get(player.getGameProfile().getId()) - System.currentTimeMillis()) / 1000;
@@ -27,12 +28,8 @@ public class TpaDenyCommand {
                         } else Atelier.commandCooldown.put(player.getGameProfile().getId(), System.currentTimeMillis() + (Atelier.cooldown * 1000));
                     }
 
-                    if (TpaCommand.tpaMap.containsKey(player)) {
-                        ServerPlayer requester = TpaCommand.tpaMap.get(player);
-                        requester.sendMessage(new TextComponent("Teleport Request denied.").withStyle(ChatFormatting.GREEN), Util.NIL_UUID);
-                        player.sendMessage(new TextComponent("Teleport Request denied.").withStyle(ChatFormatting.GREEN), Util.NIL_UUID);
-                        TpaCommand.tpaMap.remove(player);
-                    } else ctx.getSource().sendFailure(new TextComponent("You have no teleport requests to accept"));
+                    player.teleportTo(player.getLevel(), data.getXSpawn(), data.getYSpawn(), data.getZSpawn(), data.getSpawnAngle(), data.getSpawnAngle());
+                    player.sendMessage(new TextComponent("Teleported to spawn.").withStyle(ChatFormatting.GREEN), Util.NIL_UUID);
 
                     return 1;
                 }));
