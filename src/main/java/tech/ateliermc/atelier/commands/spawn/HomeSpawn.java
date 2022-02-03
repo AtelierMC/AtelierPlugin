@@ -6,17 +6,16 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.server.commands.SetWorldSpawnCommand;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.level.storage.LevelData;
 import tech.ateliermc.atelier.Atelier;
 import tech.ateliermc.atelier.AtelierPermissions;
 
-public class SpawnCommand {
+public class HomeSpawn {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("spawn").requires(Permissions.require(AtelierPermissions.SPAWN))
+        dispatcher.register(Commands.literal("home").requires(Permissions.require(AtelierPermissions.HOME))
                 .executes(ctx -> {
                     ServerPlayer player = ctx.getSource().getPlayerOrException();
                     LevelData data = player.getLevel().getLevelData();
@@ -31,8 +30,12 @@ public class SpawnCommand {
 
                     Atelier.commandCooldown.put(player.getGameProfile().getId(), System.currentTimeMillis() + (Atelier.cooldown * 1000));
 
-                    player.teleportTo(player.getLevel(), data.getXSpawn(), data.getYSpawn(), data.getZSpawn(), data.getSpawnAngle(), data.getSpawnAngle());
-                    player.sendMessage(new TextComponent("Teleported to spawn.").withStyle(ChatFormatting.GREEN), Util.NIL_UUID);
+                    BlockPos pos = player.getRespawnPosition();
+
+                    if (pos != null) {
+                        player.teleportTo(pos.getX(), pos.getY(), pos.getZ());
+                        player.sendMessage(new TextComponent("Teleported to home.").withStyle(ChatFormatting.GREEN), Util.NIL_UUID);
+                    }
 
                     return 1;
                 }));

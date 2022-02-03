@@ -39,13 +39,16 @@ public final class TpaCommand {
                         if (secondsLeft > 0) {
                             ctx.getSource().sendSuccess(new TextComponent(ChatFormatting.RED + "You must wait " + secondsLeft + " seconds before using this command again."), false);
                             return 1;
-                        } else Atelier.commandCooldown.put(source.getGameProfile().getId(), System.currentTimeMillis() + (Atelier.cooldown * 1000));
+                        }
                     }
 
                     if (target == null) {
                         ctx.getSource().sendFailure(new TextComponent("Cannot find that player!").withStyle(ChatFormatting.DARK_RED));
                         return 1;
                     }
+
+
+                    Atelier.commandCooldown.put(source.getGameProfile().getId(), System.currentTimeMillis() + (Atelier.cooldown * 1000));
 
                     tpaMap.put(target, source);
                     source.sendMessage(new TextComponent("Request sent to " + targetProfile.getName()).withStyle(ChatFormatting.GREEN), Util.NIL_UUID);

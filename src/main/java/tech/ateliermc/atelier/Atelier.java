@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Atelier implements DedicatedServerModInitializer {
     public static final String MOD_ID = "atelier";
@@ -43,6 +44,14 @@ public class Atelier implements DedicatedServerModInitializer {
         });
 
         ServerLifecycleEvents.SERVER_STARTED.register((AtelierScoreboard::init));
+
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+            try {
+                executorService.awaitTermination(5, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
 
         //PermissionCheckEvent.EVENT.register((source, permission) -> TriState.of(source.hasPermission(3)));
     }

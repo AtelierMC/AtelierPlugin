@@ -85,7 +85,7 @@ public class AtelierScoreboard {
                                 "§7Welcome player, §fAtelier SMP Season 3" + "\n" +
                                 "§7finally's here, deep breath through deep sorrow" + "\n" +
                                 "§8Our fate intertwined once again." + "\n" + "\n" +
-                                "§7" + player.getServer().getPlayerCount() + "§8/§b" + player.getServer().getMaxPlayers() + " ☃ &7┃ §2" + dateFormat.format(new Date(System.currentTimeMillis())) + " ⌚")
+                                "§7" + player.getServer().getPlayerCount() + "§8/§b" + player.getServer().getMaxPlayers() + " ☃ §7┃ §2" + dateFormat.format(new Date(System.currentTimeMillis())) + " ⌚")
                 );
 
                 player.connection.send(packet);

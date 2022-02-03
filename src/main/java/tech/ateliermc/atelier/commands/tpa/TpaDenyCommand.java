@@ -19,14 +19,6 @@ public class TpaDenyCommand {
                 .executes(ctx -> {
                     ServerPlayer player = ctx.getSource().getPlayerOrException();
 
-                    if (Atelier.commandCooldown.containsKey(player.getGameProfile().getId())) {
-                        long secondsLeft = (Atelier.commandCooldown.get(player.getGameProfile().getId()) - System.currentTimeMillis()) / 1000;
-                        if (secondsLeft > 0) {
-                            ctx.getSource().sendSuccess(new TextComponent(ChatFormatting.RED + "You must wait " + secondsLeft + " seconds before using this command again."), false);
-                            return 1;
-                        } else Atelier.commandCooldown.put(player.getGameProfile().getId(), System.currentTimeMillis() + (Atelier.cooldown * 1000));
-                    }
-
                     if (TpaCommand.tpaMap.containsKey(player)) {
                         ServerPlayer requester = TpaCommand.tpaMap.get(player);
                         requester.sendMessage(new TextComponent("Teleport Request denied.").withStyle(ChatFormatting.GREEN), Util.NIL_UUID);

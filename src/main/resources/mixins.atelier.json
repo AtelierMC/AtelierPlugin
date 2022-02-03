@@ -8,7 +8,8 @@
     "server.level.ServerPlayerMixin",
     "server.network.ServerGamePacketListenerImplMixin",
     "server.players.PlayerListMixin",
-    "world.entity.player.PlayerMixin"
+    "world.entity.player.PlayerMixin",
+    "world.level.block.EndPortalBlockMixin"
   ],
   "injectors": {
     "defaultRequire": 1,
