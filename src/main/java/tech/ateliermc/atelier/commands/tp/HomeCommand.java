@@ -1,4 +1,4 @@
-package tech.ateliermc.atelier.commands.spawn;
+package tech.ateliermc.atelier.commands.tp;
 
 import com.mojang.brigadier.CommandDispatcher;
 import me.lucko.fabric.api.permissions.v0.Permissions;
@@ -13,12 +13,18 @@ import net.minecraft.world.level.storage.LevelData;
 import tech.ateliermc.atelier.Atelier;
 import tech.ateliermc.atelier.AtelierPermissions;
 
-public class HomeSpawn {
+public class HomeCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("home").requires(Permissions.require(AtelierPermissions.HOME))
                 .executes(ctx -> {
-                    ServerPlayer player = ctx.getSource().getPlayerOrException();
-                    LevelData data = player.getLevel().getLevelData();
+                    ServerPlayer player;
+
+                    try {
+                        player = ctx.getSource().getPlayerOrException();
+                    } catch (Exception e) {
+                        ctx.getSource().sendFailure(new TextComponent("You must be a player to run this command"));
+                        return 0;
+                    }
 
                     if (Atelier.commandCooldown.containsKey(player.getGameProfile().getId())) {
                         long secondsLeft = (Atelier.commandCooldown.get(player.getGameProfile().getId()) - System.currentTimeMillis()) / 1000;

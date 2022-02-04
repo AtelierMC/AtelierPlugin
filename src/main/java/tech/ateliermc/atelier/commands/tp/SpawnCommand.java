@@ -1,4 +1,4 @@
-package tech.ateliermc.atelier.commands.spawn;
+package tech.ateliermc.atelier.commands.tp;
 
 import com.mojang.brigadier.CommandDispatcher;
 import me.lucko.fabric.api.permissions.v0.Permissions;
@@ -7,9 +7,7 @@ import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.server.commands.SetWorldSpawnCommand;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.level.storage.LevelData;
 import tech.ateliermc.atelier.Atelier;
 import tech.ateliermc.atelier.AtelierPermissions;
@@ -18,7 +16,15 @@ public class SpawnCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("spawn").requires(Permissions.require(AtelierPermissions.SPAWN))
                 .executes(ctx -> {
-                    ServerPlayer player = ctx.getSource().getPlayerOrException();
+                    ServerPlayer player;
+
+                    try {
+                        player = ctx.getSource().getPlayerOrException();
+                    } catch (Exception e) {
+                        ctx.getSource().sendFailure(new TextComponent("You must be a player to run this command"));
+                        return 0;
+                    }
+
                     LevelData data = player.getLevel().getLevelData();
 
                     if (Atelier.commandCooldown.containsKey(player.getGameProfile().getId())) {

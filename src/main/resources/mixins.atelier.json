@@ -2,9 +2,10 @@
   "required": true,
   "minVersion": "0.8.3",
   "package": "tech.ateliermc.atelier.mixin",
-  "compatibilityLevel": "JAVA_16",
+  "compatibilityLevel": "JAVA_17",
   "mixins": [
     "server.ServerScoreboardMixin",
+    "server.level.ServerPlayerGameModeMixin",
     "server.level.ServerPlayerMixin",
     "server.network.ServerGamePacketListenerImplMixin",
     "server.players.PlayerListMixin",

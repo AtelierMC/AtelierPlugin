@@ -28,6 +28,9 @@ dependencies {
     compileOnly("net.luckperms:api:5.3")
     compileOnly("me.lucko:spark-api:0.1-SNAPSHOT")
     modImplementation("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
+
+    modImplementation(include("net.kyori:adventure-platform-fabric:5.0.0")!!)
+    modImplementation(include("net.kyori:adventure-text-serializer-legacy:4.9.3")!!)
 }
 
 loom {

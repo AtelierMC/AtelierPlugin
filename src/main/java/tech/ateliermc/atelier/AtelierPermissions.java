@@ -5,7 +5,7 @@ public class AtelierPermissions {
 
     public static final String SPAWN = ROOT + "spawn";
     public static final String HOME = ROOT + "home";
-    public static final String TPA = ROOT + "tpa";
+    public static final String SIT = ROOT + "sit";
 
     public static final String INVSEE = ROOT + "invsee";
     public static final String ENDER_CHEST_6 = ROOT + "ec.rows.6";

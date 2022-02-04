@@ -16,15 +16,14 @@ import java.util.function.Function;
 
 @Mixin(ServerGamePacketListenerImpl.class)
 public class ServerGamePacketListenerImplMixin {
-
     @Shadow
     public ServerPlayer player;
 
     @Redirect(
-            method ="handleChat(Lnet/minecraft/server/network/TextFilter$FilteredText;)V",
+            method = "handleChat(Lnet/minecraft/server/network/TextFilter$FilteredText;)V",
             at= @At(
-                    value ="INVOKE",
-                    target ="Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Ljava/util/function/Function;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Ljava/util/function/Function;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"
             )
     )
 

@@ -1,5 +1,7 @@
 package tech.ateliermc.atelier.bridge.server.level;
 
-public interface ServerPlayerBridge {
+import net.minecraft.network.chat.Component;
 
+public interface ServerPlayerBridge {
+    void setPlayerListName(Component component);
 }

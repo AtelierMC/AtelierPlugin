@@ -11,6 +11,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
 import net.minecraft.network.protocol.game.ClientboundTabListPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
@@ -23,6 +24,7 @@ import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import org.apache.logging.log4j.core.config.builder.api.ComponentBuilder;
 import tech.ateliermc.atelier.Atelier;
+import tech.ateliermc.atelier.bridge.server.level.ServerPlayerBridge;
 import tech.ateliermc.atelier.bridge.world.entity.player.PlayerBridge;
 
 import java.awt.*;
@@ -42,9 +44,9 @@ public class AtelierScoreboard {
     public static void init(MinecraftServer server) {
         Atelier.executorService.scheduleAtFixedRate(() -> {
             for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-                /*
                 User user = luckPerms.getUserManager().getUser(player.getUUID());
                 DoubleStatistic<StatisticWindow.TicksPerSecond> tps = spark.tps();
+                /*
 
                 ServerScoreboard scoreboard = new ServerScoreboard(player.getServer());
 
@@ -77,6 +79,17 @@ public class AtelierScoreboard {
                 ((PlayerBridge) player).setScoreboard(scoreboard);
 
                 */
+                for (ServerPlayer anotherPlayersLoopThatIDontWant : server.getPlayerList().getPlayers()) {
+                    ((ServerPlayerBridge) anotherPlayersLoopThatIDontWant).setPlayerListName(new TextComponent(" [").withStyle(ChatFormatting.DARK_GRAY)
+                            .append(new TextComponent(player.latency + "ms").withStyle(ChatFormatting.GREEN))
+                            .append(new TextComponent("] ").withStyle(ChatFormatting.DARK_GRAY)
+                                    .append(Atelier.asVanilla(AtelierChat.LEGACY_SECTION_UXRC.deserialize(user.getCachedData().getMetaData().getPrefix())))
+                                    .append(new TextComponent(" " + player.getDisplayName().getContents()).withStyle(ChatFormatting.WHITE)))
+                    );
+
+                    anotherPlayersLoopThatIDontWant.connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.UPDATE_DISPLAY_NAME, player));
+                }
+
                 final ClientboundTabListPacket packet = new ClientboundTabListPacket(
                         // Header
                         new TextComponent("AtelierMC" + "\n"),
