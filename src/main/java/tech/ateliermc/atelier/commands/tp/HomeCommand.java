@@ -9,7 +9,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.storage.LevelData;
 import tech.ateliermc.atelier.Atelier;
 import tech.ateliermc.atelier.AtelierPermissions;
 
@@ -39,7 +38,9 @@ public class HomeCommand {
                     BlockPos pos = player.getRespawnPosition();
 
                     if (pos != null) {
-                        player.teleportTo(pos.getX(), pos.getY(), pos.getZ());
+                        player.teleportTo(ctx.getSource().getServer().getLevel(player.getRespawnDimension()),
+                                pos.getX(), pos.getY(), pos.getZ(),
+                                0F, 0F);
                         player.sendMessage(new TextComponent("Teleported to home.").withStyle(ChatFormatting.GREEN), Util.NIL_UUID);
                     }
 

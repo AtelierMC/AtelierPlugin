@@ -3,24 +3,20 @@ package tech.ateliermc.atelier.common;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.fabric.impl.NBTLegacyHoverEventSerializer;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import net.kyori.adventure.translation.Translator;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
-import net.minecraft.ChatFormatting;
 import net.minecraft.locale.Language;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tech.ateliermc.atelier.Atelier;
@@ -28,15 +24,13 @@ import tech.ateliermc.atelier.Atelier;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AtelierChat {
-    private AtelierChat() {  }
-
-    static LuckPerms luckPerms = LuckPermsProvider.get();
-
+    public static final GsonComponentSerializer GSON = GsonComponentSerializer.builder()
+            .legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE)
+            .build();
     private static final Pattern LOCALIZATION_PATTERN = Pattern.compile("%(?:(\\d+)\\$)?s");
     public static final ComponentFlattener FLATTENER = ComponentFlattener.basic().toBuilder()
             .complexMapper(net.kyori.adventure.text.TranslatableComponent.class, (translatable, consumer) -> {
@@ -87,9 +81,9 @@ public class AtelierChat {
             })
             .build();
     public static final LegacyComponentSerializer LEGACY_SECTION_UXRC = LegacyComponentSerializer.builder().flattener(FLATTENER).hexColors().useUnusualXRepeatedCharacterHexFormat().build();
-    public static final GsonComponentSerializer GSON = GsonComponentSerializer.builder()
-            .legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE)
-            .build();
+    static LuckPerms luckPerms = LuckPermsProvider.get();
+    private AtelierChat() {
+    }
 
     public static void handleChat(PlayerList playerList, ServerPlayer player, Component rawComponent, ChatType chatType, UUID uuid) {
         final TranslatableComponent component = (TranslatableComponent) rawComponent;

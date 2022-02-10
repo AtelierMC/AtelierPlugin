@@ -6,7 +6,10 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.LevelData;
 import tech.ateliermc.atelier.Atelier;
@@ -37,7 +40,7 @@ public class SpawnCommand {
 
                     Atelier.commandCooldown.put(player.getGameProfile().getId(), System.currentTimeMillis() + (Atelier.cooldown * 1000));
 
-                    player.teleportTo(player.getLevel(), data.getXSpawn(), data.getYSpawn(), data.getZSpawn(), data.getSpawnAngle(), data.getSpawnAngle());
+                    player.teleportTo(ctx.getSource().getServer().getLevel(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("overworld"))), data.getXSpawn(), data.getYSpawn(), data.getZSpawn(), data.getSpawnAngle(), data.getSpawnAngle());
                     player.sendMessage(new TextComponent("Teleported to spawn.").withStyle(ChatFormatting.GREEN), Util.NIL_UUID);
 
                     return 1;

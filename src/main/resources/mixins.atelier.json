@@ -10,7 +10,11 @@
     "server.network.ServerGamePacketListenerImplMixin",
     "server.players.PlayerListMixin",
     "world.entity.player.PlayerMixin",
-    "world.level.block.EndPortalBlockMixin"
+    "world.level.block.CocoaBlockMixin",
+    "world.level.block.CropBlockMixin",
+    "world.level.block.EndPortalBlockMixin",
+    "world.level.block.NetherWartBlockMixin",
+    "world.level.state.BlockBehaviourMixin"
   ],
   "injectors": {
     "defaultRequire": 1,

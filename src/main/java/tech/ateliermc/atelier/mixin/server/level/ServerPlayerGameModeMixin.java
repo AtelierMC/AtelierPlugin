@@ -31,10 +31,13 @@ import tech.ateliermc.atelier.common.AtelierSit;
 
 @Mixin(ServerPlayerGameMode.class)
 public class ServerPlayerGameModeMixin {
-    @Shadow @Final protected ServerPlayer player;
-    @Shadow private GameType gameModeForPlayer;
-
-    @Shadow protected ServerLevel level;
+    @Shadow
+    @Final
+    protected ServerPlayer player;
+    @Shadow
+    protected ServerLevel level;
+    @Shadow
+    private GameType gameModeForPlayer;
 
     @Inject(method = "useItemOn(Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/world/level/Level;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/phys/BlockHitResult;)Lnet/minecraft/world/InteractionResult;",
             at = @At(
@@ -73,9 +76,8 @@ public class ServerPlayerGameModeMixin {
                 offset.add(direction.getCounterClockWise().step());
             lookTarget = new Vec3(blockPos.getX() + 0.5 - offset.x(), blockPos.getY(), blockPos.getZ() + 0.5 - offset.z());
             blockPosOffset = new Vec3(offset);
-            blockPosOffset = blockPosOffset.scale(-3f/16f);
-        }
-        else {
+            blockPosOffset = blockPosOffset.scale(-3f / 16f);
+        } else {
             lookTarget = player.position();
             blockPosOffset = Vec3.ZERO;
         }
