@@ -2,13 +2,13 @@ package tech.ateliermc.atelier;
 
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.text.Component;
 import net.minecraft.world.entity.Entity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import tech.ateliermc.atelier.commands.admin.HoloCommand;
 import tech.ateliermc.atelier.commands.misc.NickCommand;
 import tech.ateliermc.atelier.commands.misc.SitCommand;
 import tech.ateliermc.atelier.commands.tp.HomeCommand;
@@ -16,6 +16,7 @@ import tech.ateliermc.atelier.commands.tp.SpawnCommand;
 import tech.ateliermc.atelier.common.AtelierChat;
 import tech.ateliermc.atelier.common.AtelierScoreboard;
 import tech.ateliermc.atelier.common.AtelierSit;
+import tech.ateliermc.atelier.common.hologram.AtelierHologram;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,16 +47,22 @@ public class Atelier implements DedicatedServerModInitializer {
 
     @Override
     public void onInitializeServer() {
+        AtelierHologram.load();
+
         CommandRegistrationCallback.EVENT.register((dispatcher, dedzicated) -> {
             SpawnCommand.register(dispatcher);
             HomeCommand.register(dispatcher);
 
             NickCommand.register(dispatcher);
             SitCommand.register(dispatcher);
+
+            new HoloCommand().register(dispatcher, "holo");
         });
 
         ServerLifecycleEvents.SERVER_STARTING.register(server -> Atelier.adventure = FabricServerAudiences.of(server));
-        ServerLifecycleEvents.SERVER_STARTED.register((AtelierScoreboard::init));
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            AtelierScoreboard.init(server);
+        });
 
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             try {
@@ -65,6 +72,7 @@ public class Atelier implements DedicatedServerModInitializer {
             }
         });
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            AtelierHologram.save();
             Atelier.adventure = null;
 
             for (Entity entity : AtelierSit._chairs) {
@@ -72,7 +80,5 @@ public class Atelier implements DedicatedServerModInitializer {
                     entity.kill();
             }
         });
-
-        //PermissionCheckEvent.EVENT.register((source, permission) -> TriState.of(source.hasPermission(3)));
     }
 }

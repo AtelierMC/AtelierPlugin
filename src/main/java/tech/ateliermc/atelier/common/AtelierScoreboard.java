@@ -12,9 +12,15 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
 import net.minecraft.network.protocol.game.ClientboundTabListPacket;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.ServerScoreboard;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.Scoreboard;
+import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import tech.ateliermc.atelier.Atelier;
+import tech.ateliermc.atelier.bridge.server.ServerScoreboardBridge;
 import tech.ateliermc.atelier.bridge.server.level.ServerPlayerBridge;
+import tech.ateliermc.atelier.bridge.world.entity.player.PlayerBridge;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -31,41 +37,12 @@ public class AtelierScoreboard {
     public static void init(MinecraftServer server) {
         Atelier.executorService.scheduleAtFixedRate(() -> {
             for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                ((ServerScoreboardBridge) player.getScoreboard()).bridge$removePlayer(player, true);
+                ((PlayerBridge) player).setScoreboard(makeScoreboard(player));
+                ((ServerScoreboardBridge) player.getScoreboard()).bridge$addPlayer(player, true);
+
                 User user = luckPerms.getUserManager().getUser(player.getUUID());
-                DoubleStatistic<StatisticWindow.TicksPerSecond> tps = spark.tps();
-                /*
 
-                ServerScoreboard scoreboard = new ServerScoreboard(player.getServer());
-
-                Objective objective = scoreboard.addObjective(player.getScoreboardName() + "obj-dummy",
-                        ObjectiveCriteria.DUMMY,
-                        new TextComponent("§f§lAtelierMC"),
-                        ObjectiveCriteria.RenderType.INTEGER);
-                scoreboard.setDisplayObjective(Scoreboard.DISPLAY_SLOT_SIDEBAR, objective);
-
-                PlayerTeam tpsTeam = new PlayerTeam(scoreboard, "tps");
-                tpsTeam.setPlayerPrefix(new TextComponent(" §8● §6TPS§7: §f"));
-                tpsTeam.setPlayerSuffix(new TextComponent(DECIMAL_FORMAT.format(tps.poll(StatisticWindow.TicksPerSecond.MINUTES_1))));
-                scoreboard.addPlayerToTeam("tps", tpsTeam);
-
-                scoreboard.getOrCreatePlayerScore("§8§m                        §4", objective).setScore(13);
-                scoreboard.getOrCreatePlayerScore(ChatFormatting.GRAY + dateFormat.format(new Date(System.currentTimeMillis())), objective).setScore(12);
-                scoreboard.getOrCreatePlayerScore("§f", objective).setScore(11);
-                scoreboard.getOrCreatePlayerScore("§b◆§7 Player:", objective).setScore(10);
-                scoreboard.getOrCreatePlayerScore(" §8● §6User§7: §f" + player.getDisplayName().getContents(), objective).setScore(9);
-                scoreboard.getOrCreatePlayerScore(" §8● §6Rank§7: §f" + user.getCachedData().getMetaData().getPrefix(), objective).setScore(8);
-                scoreboard.getOrCreatePlayerScore(" §8● §6Ping§7: §f" + player.latency + "§7ms", objective).setScore(7);
-                scoreboard.getOrCreatePlayerScore("§d", objective).setScore(6);
-                scoreboard.getOrCreatePlayerScore("§b◆§7 Server:", objective).setScore(5);
-                scoreboard.getOrCreatePlayerScore(" §8● §6TPS§7: §f", objective).setScore(4);
-                scoreboard.getOrCreatePlayerScore(" §8● §6Memory§7: §f" + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024) + "§8/§f" + (Runtime.getRuntime().totalMemory() / 1024 / 1024), objective).setScore(3);
-                scoreboard.getOrCreatePlayerScore("§r", objective).setScore(2);
-                scoreboard.getOrCreatePlayerScore("§e§i ateliermc.tech", objective).setScore(1);
-                scoreboard.getOrCreatePlayerScore("§8§m                         §8", objective).setScore(0);
-
-                ((PlayerBridge) player).setScoreboard(scoreboard);
-
-                */
                 ((ServerPlayerBridge) player).setPlayerListName(new TextComponent(" ")
                         .append(Atelier.asVanilla(AtelierChat.LEGACY_SECTION_UXRC.deserialize(user.getCachedData().getMetaData().getPrefix())))
                         .append(new TextComponent(" " + player.getDisplayName().getContents()).withStyle(ChatFormatting.WHITE))
@@ -92,5 +69,34 @@ public class AtelierScoreboard {
                 player.connection.send(packet);
             }
         }, 0, 1, TimeUnit.SECONDS);
+    }
+
+    public static Scoreboard makeScoreboard(ServerPlayer player) {
+        ServerScoreboard scoreboard = new ServerScoreboard(player.server);
+        DoubleStatistic<StatisticWindow.TicksPerSecond> tps = spark.tps();
+        User user = luckPerms.getUserManager().getUser(player.getUUID());
+
+        Objective objective = scoreboard.addObjective(player.getScoreboardName() + "obj-dummy",
+                ObjectiveCriteria.DUMMY,
+                new TextComponent("§f§lAtelierMC"),
+                ObjectiveCriteria.RenderType.INTEGER);
+        scoreboard.setDisplayObjective(Scoreboard.DISPLAY_SLOT_SIDEBAR, objective);
+
+        scoreboard.getOrCreatePlayerScore("§8§m                        §4", objective).setScore(13);
+        scoreboard.getOrCreatePlayerScore(ChatFormatting.GRAY + dateFormat.format(new Date(System.currentTimeMillis())), objective).setScore(12);
+        scoreboard.getOrCreatePlayerScore("§f", objective).setScore(11);
+        scoreboard.getOrCreatePlayerScore("§b◆§7 Player:", objective).setScore(10);
+        scoreboard.getOrCreatePlayerScore(" §8● §6User§7: §f" + player.getDisplayName().getContents(), objective).setScore(9);
+        scoreboard.getOrCreatePlayerScore(" §8● §6Rank§7: §f" + user.getCachedData().getMetaData().getPrefix(), objective).setScore(8);
+        scoreboard.getOrCreatePlayerScore(" §8● §6Ping§7: §f" + player.latency + "§7ms", objective).setScore(7);
+        scoreboard.getOrCreatePlayerScore("§d", objective).setScore(6);
+        scoreboard.getOrCreatePlayerScore("§b◆§7 Server:", objective).setScore(5);
+        scoreboard.getOrCreatePlayerScore(" §8● §6TPS§7: §f" + DECIMAL_FORMAT.format(tps.poll(StatisticWindow.TicksPerSecond.MINUTES_1)), objective).setScore(4);
+        scoreboard.getOrCreatePlayerScore(" §8● §6Memory§7: §f" + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024) + "§8/§f" + (Runtime.getRuntime().totalMemory() / 1024 / 1024), objective).setScore(3);
+        scoreboard.getOrCreatePlayerScore("§r", objective).setScore(2);
+        scoreboard.getOrCreatePlayerScore("§e§i ateliermc.tech", objective).setScore(1);
+        scoreboard.getOrCreatePlayerScore("§8§m                         §8", objective).setScore(0);
+
+        return scoreboard;
     }
 }

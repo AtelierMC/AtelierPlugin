@@ -22,7 +22,7 @@ dependencies {
     // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:$mcVersion")
     mappings(loom.officialMojangMappings())
-    modImplementation("net.fabricmc:fabric-loader:0.12.12")
+    modImplementation("net.fabricmc:fabric-loader:0.13.1")
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.46.1+1.18")
 
     compileOnly("net.luckperms:api:5.3")

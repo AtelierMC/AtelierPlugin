@@ -4,6 +4,7 @@
   "package": "tech.ateliermc.atelier.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "server.MinecraftServerMixin",
     "server.ServerScoreboardMixin",
     "server.level.ServerPlayerGameModeMixin",
     "server.level.ServerPlayerMixin",

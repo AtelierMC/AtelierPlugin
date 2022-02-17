@@ -8,7 +8,7 @@ import tech.ateliermc.atelier.bridge.world.entity.player.PlayerBridge;
 
 @Mixin(Player.class)
 public class PlayerMixin implements PlayerBridge {
-    private Scoreboard scoreboard;
+    protected Scoreboard scoreboard;
 
     /**
      * @author JustMango

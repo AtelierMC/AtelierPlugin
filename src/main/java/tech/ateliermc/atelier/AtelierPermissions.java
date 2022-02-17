@@ -9,6 +9,8 @@ public class AtelierPermissions {
     public static final String HOME = ROOT + "home";
     public static final String SIT = ROOT + "sit";
 
+    public static final String HOLOGRAM = ROOT + "hologram";
+
     public static final String ENDER_CHEST_6 = ROOT + "ec.rows.6";
     public static final String ENDER_CHEST_5 = ROOT + "ec.rows.5";
     public static final String ENDER_CHEST_4 = ROOT + "ec.rows.4";
