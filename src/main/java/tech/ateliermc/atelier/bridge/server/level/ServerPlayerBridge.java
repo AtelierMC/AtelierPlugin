@@ -5,5 +5,7 @@ import net.minecraft.network.chat.Component;
 public interface ServerPlayerBridge {
     void setPlayerListName(Component component);
 
-    Component getNick();
+    void setEnableScoreboard(boolean enable);
+
+    boolean enableScoreboard();
 }

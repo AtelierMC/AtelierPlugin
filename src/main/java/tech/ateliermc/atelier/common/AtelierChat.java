@@ -1,20 +1,19 @@
 package tech.ateliermc.atelier.common;
 
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.fabric.impl.NBTLegacyHoverEventSerializer;
+import net.kyori.adventure.platform.fabric.FabricAudiences;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import net.kyori.adventure.translation.Translator;
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
+import net.minecraft.ChatFormatting;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
@@ -29,9 +28,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AtelierChat {
-    public static final GsonComponentSerializer GSON = GsonComponentSerializer.builder()
-            .legacyHoverEventSerializer(NBTLegacyHoverEventSerializer.INSTANCE)
-            .build();
     private static final Pattern LOCALIZATION_PATTERN = Pattern.compile("%(?:(\\d+)\\$)?s");
     public static final ComponentFlattener FLATTENER = ComponentFlattener.basic().toBuilder()
             .complexMapper(net.kyori.adventure.text.TranslatableComponent.class, (translatable, consumer) -> {
@@ -82,19 +78,21 @@ public class AtelierChat {
             })
             .build();
     public static final LegacyComponentSerializer LEGACY_SECTION_UXRC = LegacyComponentSerializer.builder().flattener(FLATTENER).hexColors().useUnusualXRepeatedCharacterHexFormat().build();
-    public static final PlainTextComponentSerializer PLAIN = PlainTextComponentSerializer.builder().flattener(FLATTENER).build();
-
-    static LuckPerms luckPerms = LuckPermsProvider.get();
-    private AtelierChat() {
-    }
 
     public static void handleChat(PlayerList playerList, ServerPlayer player, Component rawComponent, ChatType chatType, UUID uuid) {
         final TranslatableComponent component = (TranslatableComponent) rawComponent;
-        final User user = luckPerms.getUserManager().getUser(player.getUUID());
-        String rawMessage = (String) component.getArgs()[1];
+        final User user = Atelier.luckPerms.getUserManager().getUser(player.getUUID());
+        final String rawMessage = (String) component.getArgs()[1];
+        final Component prefix = Atelier.adventure().toNative(LEGACY_SECTION_UXRC.deserialize(user.getCachedData().getMetaData().getPrefix()));
 
         Audience audience = Atelier.adventure().audience(playerList.getPlayers());
 
-        audience.sendMessage(LEGACY_SECTION_UXRC.deserialize(user.getCachedData().getMetaData().getPrefix() + " " + player.getDisplayName().getContents() + "§7 ▶ §f" + rawMessage));
+        audience.sendMessage(net.kyori.adventure.text.Component.text()
+                .append(LEGACY_SECTION_UXRC.deserialize(user.getCachedData().getMetaData().getPrefix() + " "),
+                        Atelier.adventure().toAdventure(player.getDisplayName()),
+                        net.kyori.adventure.text.Component.text(" ▶ ", NamedTextColor.GRAY),
+                        net.kyori.adventure.text.Component.text(rawMessage, NamedTextColor.WHITE)
+                )
+        );
     }
 }

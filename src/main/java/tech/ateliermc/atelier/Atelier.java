@@ -1,19 +1,23 @@
 package tech.ateliermc.atelier;
 
+import me.lucko.spark.api.Spark;
+import me.lucko.spark.api.SparkProvider;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
-import net.kyori.adventure.text.Component;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
 import net.minecraft.world.entity.Entity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tech.ateliermc.atelier.commands.admin.HoloCommand;
+import tech.ateliermc.atelier.commands.misc.ClearNickCommand;
 import tech.ateliermc.atelier.commands.misc.NickCommand;
 import tech.ateliermc.atelier.commands.misc.SitCommand;
+import tech.ateliermc.atelier.commands.misc.ToggleScoreboardCommand;
 import tech.ateliermc.atelier.commands.tp.HomeCommand;
 import tech.ateliermc.atelier.commands.tp.SpawnCommand;
-import tech.ateliermc.atelier.common.AtelierChat;
 import tech.ateliermc.atelier.common.AtelierScoreboard;
 import tech.ateliermc.atelier.common.AtelierSit;
 import tech.ateliermc.atelier.common.hologram.AtelierHologram;
@@ -27,22 +31,23 @@ import java.util.concurrent.TimeUnit;
 
 public class Atelier implements DedicatedServerModInitializer {
     public static final String MOD_ID = "atelier";
+
+    public static Logger LOGGER = LogManager.getLogger("Atelier");
+
     public static final Map<UUID, Long> commandCooldown = new HashMap<>();
     public static final int cooldown = 900;
-    public static Logger LOGGER = LogManager.getLogger("Atelier");
-    public static ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-    private static FabricServerAudiences adventure;
 
+    public static ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+
+    public static LuckPerms luckPerms;
+    public static Spark spark;
+
+    private static FabricServerAudiences adventure;
     public static FabricServerAudiences adventure() {
         if (Atelier.adventure == null) {
             throw new IllegalStateException("Tried to access Adventure without a running server!");
         }
         return adventure;
-    }
-
-    public static net.minecraft.network.chat.Component asVanilla(final Component component) {
-        if (component == null) return null;
-        return net.minecraft.network.chat.Component.Serializer.fromJson(AtelierChat.GSON.serializer().toJsonTree(component));
     }
 
     @Override
@@ -54,13 +59,20 @@ public class Atelier implements DedicatedServerModInitializer {
             HomeCommand.register(dispatcher);
 
             NickCommand.register(dispatcher);
+            ClearNickCommand.register(dispatcher);
             SitCommand.register(dispatcher);
+
+            ToggleScoreboardCommand.register(dispatcher);
 
             new HoloCommand().register(dispatcher, "holo");
         });
 
-        ServerLifecycleEvents.SERVER_STARTING.register(server -> Atelier.adventure = FabricServerAudiences.of(server));
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> {
+            Atelier.adventure = FabricServerAudiences.of(server);
+        });
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            Atelier.luckPerms = LuckPermsProvider.get();
+            Atelier.spark = SparkProvider.get();
             AtelierScoreboard.init(server);
         });
 

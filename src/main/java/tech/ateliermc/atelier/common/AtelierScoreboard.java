@@ -1,11 +1,7 @@
 package tech.ateliermc.atelier.common;
 
-import me.lucko.spark.api.Spark;
-import me.lucko.spark.api.SparkProvider;
 import me.lucko.spark.api.statistic.StatisticWindow;
 import me.lucko.spark.api.statistic.types.DoubleStatistic;
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TextComponent;
@@ -28,27 +24,18 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class AtelierScoreboard {
-
     protected static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("###,##0.0");
     static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy hh:mm aa");
-    static final LuckPerms luckPerms = LuckPermsProvider.get();
-    static final Spark spark = SparkProvider.get();
 
     public static void init(MinecraftServer server) {
         Atelier.executorService.scheduleAtFixedRate(() -> {
             for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-                ((ServerScoreboardBridge) player.getScoreboard()).bridge$removePlayer(player, true);
-                ((PlayerBridge) player).setScoreboard(makeScoreboard(player));
-                ((ServerScoreboardBridge) player.getScoreboard()).bridge$addPlayer(player, true);
-
-                User user = luckPerms.getUserManager().getUser(player.getUUID());
+                User user = Atelier.luckPerms.getUserManager().getUser(player.getUUID());
 
                 ((ServerPlayerBridge) player).setPlayerListName(new TextComponent(" ")
-                        .append(Atelier.asVanilla(AtelierChat.LEGACY_SECTION_UXRC.deserialize(user.getCachedData().getMetaData().getPrefix())))
+                        .append(Atelier.adventure().toNative(AtelierChat.LEGACY_SECTION_UXRC.deserialize(user.getCachedData().getMetaData().getPrefix())))
                         .append(new TextComponent(" " + player.getDisplayName().getContents()).withStyle(ChatFormatting.WHITE))
-                        .append(new TextComponent(" [").withStyle(ChatFormatting.DARK_GRAY))
-                        .append(new TextComponent(player.latency + "ms").withStyle(ChatFormatting.GREEN))
-                        .append(new TextComponent("] ").withStyle(ChatFormatting.DARK_GRAY))
+                        .append(new TextComponent(" " + player.latency + "ms").withStyle(ChatFormatting.GREEN))
                 );
 
                 for (ServerPlayer anotherPlayersLoopThatIDontWant : server.getPlayerList().getPlayers()) {
@@ -67,14 +54,20 @@ public class AtelierScoreboard {
                 );
 
                 player.connection.send(packet);
+
+                if (!((ServerPlayerBridge) player).enableScoreboard()) return;
+
+                ((ServerScoreboardBridge) player.getScoreboard()).bridge$removePlayer(player, true);
+                ((PlayerBridge) player).setScoreboard(makeScoreboard(player));
+                ((ServerScoreboardBridge) player.getScoreboard()).bridge$addPlayer(player, true);
             }
         }, 0, 1, TimeUnit.SECONDS);
     }
 
     public static Scoreboard makeScoreboard(ServerPlayer player) {
         ServerScoreboard scoreboard = new ServerScoreboard(player.server);
-        DoubleStatistic<StatisticWindow.TicksPerSecond> tps = spark.tps();
-        User user = luckPerms.getUserManager().getUser(player.getUUID());
+        DoubleStatistic<StatisticWindow.TicksPerSecond> tps = Atelier.spark.tps();
+        User user = Atelier.luckPerms.getUserManager().getUser(player.getUUID());
 
         Objective objective = scoreboard.addObjective(player.getScoreboardName() + "obj-dummy",
                 ObjectiveCriteria.DUMMY,
@@ -86,7 +79,7 @@ public class AtelierScoreboard {
         scoreboard.getOrCreatePlayerScore(ChatFormatting.GRAY + dateFormat.format(new Date(System.currentTimeMillis())), objective).setScore(12);
         scoreboard.getOrCreatePlayerScore("§f", objective).setScore(11);
         scoreboard.getOrCreatePlayerScore("§b◆§7 Player:", objective).setScore(10);
-        scoreboard.getOrCreatePlayerScore(" §8● §6User§7: §f" + player.getDisplayName().getContents(), objective).setScore(9);
+        scoreboard.getOrCreatePlayerScore(" §8● §6User§7: §f" + player.getName().getContents(), objective).setScore(9);
         scoreboard.getOrCreatePlayerScore(" §8● §6Rank§7: §f" + user.getCachedData().getMetaData().getPrefix(), objective).setScore(8);
         scoreboard.getOrCreatePlayerScore(" §8● §6Ping§7: §f" + player.latency + "§7ms", objective).setScore(7);
         scoreboard.getOrCreatePlayerScore("§d", objective).setScore(6);

@@ -47,6 +47,11 @@ public class HoloCommand implements com.mojang.brigadier.Command<CommandSourceSt
         try {
             String[] args = context.getInput().split(" ");
 
+            if (args.length == 1) {
+                player.sendMessage(new TextComponent("Uncompleted command!"), Util.NIL_UUID);
+                return 1;
+            }
+
             if (args[1].equalsIgnoreCase("create")) {
                 String text = context.getInput().replace(args[0] + " " + args[1] + " " + args[2], "").trim();
 
