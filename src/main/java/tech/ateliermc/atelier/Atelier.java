@@ -12,10 +12,11 @@ import net.minecraft.world.entity.Entity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tech.ateliermc.atelier.commands.admin.HoloCommand;
-import tech.ateliermc.atelier.commands.misc.ClearNickCommand;
-import tech.ateliermc.atelier.commands.misc.NickCommand;
+import tech.ateliermc.atelier.commands.nick.ClearNickCommand;
+import tech.ateliermc.atelier.commands.nick.NickCommand;
 import tech.ateliermc.atelier.commands.misc.SitCommand;
 import tech.ateliermc.atelier.commands.misc.ToggleScoreboardCommand;
+import tech.ateliermc.atelier.commands.nick.WhoisCommand;
 import tech.ateliermc.atelier.commands.tp.HomeCommand;
 import tech.ateliermc.atelier.commands.tp.SpawnCommand;
 import tech.ateliermc.atelier.common.AtelierScoreboard;
@@ -58,8 +59,10 @@ public class Atelier implements DedicatedServerModInitializer {
             SpawnCommand.register(dispatcher);
             HomeCommand.register(dispatcher);
 
-            NickCommand.register(dispatcher);
             ClearNickCommand.register(dispatcher);
+            NickCommand.register(dispatcher);
+            WhoisCommand.register(dispatcher);
+
             SitCommand.register(dispatcher);
 
             ToggleScoreboardCommand.register(dispatcher);

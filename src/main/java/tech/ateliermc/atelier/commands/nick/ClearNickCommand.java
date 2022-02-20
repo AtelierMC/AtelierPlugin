@@ -1,4 +1,4 @@
-package tech.ateliermc.atelier.commands.misc;
+package tech.ateliermc.atelier.commands.nick;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -9,10 +9,9 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import tech.ateliermc.atelier.AtelierPermissions;
 
-public class NickCommand {
+public class ClearNickCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("nick").requires(Permissions.require(AtelierPermissions.NICK))
-                .then(Commands.argument("nickname", StringArgumentType.greedyString())
+        dispatcher.register(Commands.literal("clearnick").requires(Permissions.require(AtelierPermissions.NICK))
                 .executes(ctx -> {
                     ServerPlayer player;
 
@@ -23,16 +22,10 @@ public class NickCommand {
                         return 0;
                     }
 
-                    String nick = StringArgumentType.getString(ctx, "nickname");
-
-                    if (nick.length() > 32) {
-                        ctx.getSource().sendFailure(new TextComponent("Nickname is too long"));
-                    }
-
-                    nick = nick.replace("&", "§");
-                    player.setCustomName(new TextComponent(nick));
+                    player.setCustomName(null);
 
                     return 1;
-                })));
+                })
+        );
     }
 }

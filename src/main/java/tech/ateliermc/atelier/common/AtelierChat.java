@@ -79,6 +79,9 @@ public class AtelierChat {
             .build();
     public static final LegacyComponentSerializer LEGACY_SECTION_UXRC = LegacyComponentSerializer.builder().flattener(FLATTENER).hexColors().useUnusualXRepeatedCharacterHexFormat().build();
 
+    public static final Component ATELIER_LOGO = Atelier.adventure().toNative(AtelierChat.LEGACY_SECTION_UXRC.deserialize("§x§e§9§f§2§8§dA§x§d§a§e§a§9§bt§x§c§a§e§2§a§9e§x§b§b§d§9§b§7l§x§a§b§d§1§c§5i§x§9§c§c§9§d§3e§x§8§c§c§0§e§1r§x§7§d§b§8§e§fM§x§6§d§a§f§f§dC"));
+    public static final Component ATELIER_DISCORD_LINK = Atelier.adventure().toNative(AtelierChat.LEGACY_SECTION_UXRC.deserialize("§x§1§7§d§1§f§ba§x§2§0§d§2§f§bt§x§2§a§d§4§f§be§x§3§3§d§5§f§bl§x§3§d§d§7§f§bi§x§4§6§d§8§f§be§x§4§f§d§a§f§br§x§5§9§d§b§f§bm§x§6§2§d§d§f§bc§x§6§c§d§e§f§b.§x§7§5§e§0§f§ct§x§7§e§e§1§f§ce§x§8§8§e§2§f§cc§x§9§1§e§4§f§ch§x§9§b§e§5§f§c/§x§a§4§e§7§f§cd§x§a§d§e§8§f§ci§x§b§7§e§a§f§cs§x§c§0§e§b§f§cc§x§c§a§e§d§f§co§x§d§3§e§e§f§cr§x§d§c§e§f§f§dd"));
+
     public static void handleChat(PlayerList playerList, ServerPlayer player, Component rawComponent, ChatType chatType, UUID uuid) {
         final TranslatableComponent component = (TranslatableComponent) rawComponent;
         final User user = Atelier.luckPerms.getUserManager().getUser(player.getUUID());
@@ -94,5 +97,7 @@ public class AtelierChat {
                         net.kyori.adventure.text.Component.text(rawMessage, NamedTextColor.WHITE)
                 )
         );
+
+        playerList.getServer().sendMessage(component, uuid);
     }
 }

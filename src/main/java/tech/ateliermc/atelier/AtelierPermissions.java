@@ -4,6 +4,7 @@ public class AtelierPermissions {
     public static final String ROOT = Atelier.MOD_ID + ".";
 
     public static final String NICK = ROOT + "nick";
+    public static final String WHOIS = ROOT + "whois";
 
     public static final String SPAWN = ROOT + "spawn";
     public static final String HOME = ROOT + "home";
